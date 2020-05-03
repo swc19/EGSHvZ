@@ -1,0 +1,4 @@
+name: HvZ
+version: ${project.version}
+main: com.egsrit.hvz.HvZ
+api-version: 1.13
