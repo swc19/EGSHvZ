@@ -1,7 +1,7 @@
 package com.egsrit.hvz.listeners;
 
 import com.egsrit.hvz.players.Human;
-import com.egsrit.hvz.players.Zombie;
+import com.egsrit.hvz.players.HvzZombie;
 import com.egsrit.hvz.util.Stats;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,14 +13,14 @@ public class TagListener implements Listener {
     @EventHandler
     public void onTag(EntityDamageByEntityEvent e){
         // Needs special case for witch also
-        if(e.getEntity() instanceof Human && e.getDamager() instanceof Zombie){
+        if(e.getEntity() instanceof Human && e.getDamager() instanceof HvzZombie){
             // Check for body armor
             Human human = (Human) e.getEntity();
-            Zombie zombie = (Zombie) e.getDamager();
+            HvzZombie hvzZombie = (HvzZombie) e.getDamager();
             human.setAliveStatus(0);
-            Zombie newZombie = new Zombie((Player) e.getEntity(), 300);
-            Stats.addZombie(newZombie);
-            Stats.addTag(human, zombie);
+            HvzZombie newHvzZombie = new HvzZombie((Player) e.getEntity(), 300);
+            Stats.addZombie(newHvzZombie);
+            Stats.addTag(human, hvzZombie);
             System.out.println(((Player) e.getEntity()).getDisplayName() + " has been tagged by " + ((Player) e.getDamager()).getDisplayName() + "!");
         }
     }

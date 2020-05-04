@@ -1,16 +1,17 @@
 package com.egsrit.hvz.players.specialZombies;
 
-import com.egsrit.hvz.players.Zombie;
+import com.egsrit.hvz.players.HvzZombie;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public class Jackal extends Zombie {
+public class Jackal extends HvzZombie {
 
     public Jackal(Player player, int stunTime) {
         super(player, stunTime/2);
     }
 
     @Override
-    public String getNameTagColor() {
-        return "White";
+    public ChatColor getNameTagColor() {
+        return ChatColor.WHITE;
     }
 }

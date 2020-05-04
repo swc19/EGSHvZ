@@ -1,5 +1,6 @@
 package com.egsrit.hvz.players.specialZombies;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class Twitch extends Witch {
@@ -8,7 +9,7 @@ public class Twitch extends Witch {
     }
 
     @Override
-    public String getNameTagColor() {
-        return "Purple";
+    public ChatColor getNameTagColor() {
+        return ChatColor.DARK_PURPLE;
     }
 }

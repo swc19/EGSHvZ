@@ -1,7 +1,7 @@
 package com.egsrit.hvz.util;
 
 import com.egsrit.hvz.players.Human;
-import com.egsrit.hvz.players.Zombie;
+import com.egsrit.hvz.players.HvzZombie;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -15,16 +15,16 @@ public class Stats {
         humans.put(h.getHuman(), new ArrayList<>());
     }
 
-    public static void addZombie(Zombie z){
+    public static void addZombie(HvzZombie z){
         zombies.put(z.getZombie(), new ArrayList<>());
     }
 
-    public static void addTag(Human h, Zombie z){
+    public static void addTag(Human h, HvzZombie z){
         ArrayList<Player> tagList = zombies.get(z.getZombie());
         tagList.add(h.getHuman());
     }
 
-    public static void addStun(Human h, Zombie z){
+    public static void addStun(Human h, HvzZombie z){
         ArrayList<Player> stunList = humans.get(h.getHuman());
         stunList.add(z.getZombie());
     }
@@ -33,7 +33,7 @@ public class Stats {
         return humans.get(h.getHuman());
     }
 
-    public ArrayList<Player> getTagged(Zombie z){
+    public ArrayList<Player> getTagged(HvzZombie z){
         return zombies.get(z.getZombie());
     }
 }

@@ -1,5 +1,6 @@
 package com.egsrit.hvz.players;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class Human{
@@ -15,8 +16,8 @@ public class Human{
         return this.player;
     }
 
-    public String getNameTagColor(){
-        return "Green";
+    public ChatColor getNameTagColor(){
+        return ChatColor.GREEN;
     }
 
     public void setAliveStatus(int alive){
