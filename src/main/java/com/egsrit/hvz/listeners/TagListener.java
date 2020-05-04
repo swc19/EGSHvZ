@@ -18,7 +18,6 @@ public class TagListener implements Listener {
         HashMap<String, HvzZombie> zombieList = Stats.getZombies();
 
         if(e.getEntity() instanceof Player && e.getDamager() instanceof Player){
-            e.setCancelled(true);
             Player entity = (Player) e.getEntity();
             Player damager = (Player) e.getDamager();
             String entitySpecial = zombieList.get(entity.getDisplayName()).getSpecialStatus(); // can be null, if human
@@ -30,6 +29,7 @@ public class TagListener implements Listener {
                 if(humanList.get(entity.getDisplayName()).getBodyArmor()){ // does Human have body armor?
                     //break body armor, alert zombie that human had body armor, give human some cooldown on body armor
                 } else {
+                    e.setCancelled(true);
                     Stats.getHumans().get(entity.getDisplayName()).setAliveStatus(false); // kill human
                     Stats.addZombie(entity, 300, "Zombie"); // make human a zombie
                     Stats.addTag(entity, damager); // register the tag

@@ -27,6 +27,7 @@ public class StunListener implements Listener {
             String entitySpecialStatus = zombieList.get(entity.getDisplayName()).getSpecialStatus();
             String damagerSpecialStatus = zombieList.get(damager.getDisplayName()).getSpecialStatus();
             if((damagerSpecialStatus.equals("Witch") || damagerSpecialStatus.equals("Twitch")) && zombieList.get(entity.getDisplayName()) != null){
+                e.setCancelled(true);
                 if(zombieList.get(entity.getDisplayName()).canBeStunned()){
                     stunZombie(entity, damager, entitySpecialStatus);
                     Stats.addStun(entity, damager);
@@ -49,6 +50,7 @@ public class StunListener implements Listener {
                 if(humanList.get(damager.getDisplayName()).isAlive()){
                     // All special zombies can be stunned by a snowball/sock
                     if(zombieList.get(zombie.getDisplayName()).canBeStunned()){
+                        e.setCancelled(true);
                         stunZombie(zombie, damager, null); // only humans will be in this action
                         Stats.addStun(zombie, damager);
                     }
@@ -63,13 +65,13 @@ public class StunListener implements Listener {
     @EventHandler
     public void onStunArrow(EntityDamageByEntityEvent e){
         if(e.getEntity() instanceof Player && e.getDamager() instanceof Arrow){
-            e.setCancelled(true);
             Player zombie = (Player) e.getEntity();
             Arrow arrow = (Arrow) e.getDamager();
             if(arrow.getShooter() instanceof Player){
                 Player damager = (Player) arrow.getShooter();
                 if(humanList.get(damager.getDisplayName()).isAlive()){
                     if(zombieList.get(zombie.getDisplayName()).canBeStunned()){
+                        e.setCancelled(true);
                         String specialStatus = zombieList.get(zombie.getDisplayName()).getSpecialStatus();
                         switch(specialStatus){
                             case "Tank":
