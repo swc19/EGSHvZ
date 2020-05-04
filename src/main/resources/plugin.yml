@@ -1,4 +1,8 @@
-name: HvZ
-version: ${project.version}
-main: com.egsrit.hvz.HvZ
+name: HvZPlugin
+version: 0.0.1
+main: com.egsrit.hvz.HvZPlugin
 api-version: 1.13
+commands:
+    hvz:
+        description: Add a player to the humans or zombies
+        usage: /<command> [human|zombie]

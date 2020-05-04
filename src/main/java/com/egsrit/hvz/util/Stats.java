@@ -8,32 +8,47 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Stats {
-    private static HashMap<Player, ArrayList<Player>> humans = new HashMap<>();
-    private static HashMap<Player, ArrayList<Player>> zombies = new HashMap<>();
+    private static final HashMap<String, Human> humans = new HashMap<>();
+    private static final HashMap<String, HvzZombie> zombies = new HashMap<>();
+    private static final HashMap<String, ArrayList<String>> stunMap = new HashMap<>();
+    private static final HashMap<String, ArrayList<String>> tagMap = new HashMap<>();
 
-    public static void addHuman(Human h){
-        humans.put(h.getHuman(), new ArrayList<>());
+    public static void addHuman(Player p){
+        stunMap.putIfAbsent(p.getDisplayName(), new ArrayList<>());
+        humans.put(p.getDisplayName(), new Human(p, true, false));
     }
 
-    public static void addZombie(HvzZombie z){
-        zombies.put(z.getZombie(), new ArrayList<>());
+    public static void addZombie(Player p, int stunTime, String specialStatus){
+        tagMap.putIfAbsent(p.getDisplayName(), new ArrayList<>());
+        zombies.put(p.getDisplayName(), new HvzZombie(p, stunTime, specialStatus, true, true));
     }
 
-    public static void addTag(Human h, HvzZombie z){
-        ArrayList<Player> tagList = zombies.get(z.getZombie());
-        tagList.add(h.getHuman());
+    public static void addTag(Player h, Player z){
+        ArrayList<String> tagList = tagMap.get(z.getDisplayName());
+        tagList.add(h.getDisplayName());
     }
 
-    public static void addStun(Human h, HvzZombie z){
-        ArrayList<Player> stunList = humans.get(h.getHuman());
-        stunList.add(z.getZombie());
+    public static void addStun(Player h, Player z){
+        ArrayList<String> stunList = stunMap.get(h.getDisplayName());
+        stunList.add(z.getDisplayName());
+    }
+    public static HashMap<String, Human> getHumans(){
+        return humans;
+    }
+    public static HashMap<String, HvzZombie> getZombies(){
+        return zombies;
+    }
+    public static HashMap<String, ArrayList<String>> getStunMap(){
+        return stunMap;
+    }
+    public static HashMap<String, ArrayList<String>> getTagMap(){
+        return tagMap;
+    }
+    public static ArrayList<String> getStunned(Player h){
+        return stunMap.get(h.getDisplayName());
     }
 
-    public ArrayList<Player> getStunned(Human h){
-        return humans.get(h.getHuman());
-    }
-
-    public ArrayList<Player> getTagged(HvzZombie z){
-        return zombies.get(z.getZombie());
+    public static ArrayList<String> getTagged(Player z){
+        return tagMap.get(z.getDisplayName());
     }
 }

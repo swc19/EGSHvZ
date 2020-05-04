@@ -4,12 +4,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class Human{
-    private Player player;
-    private int isAlive;
+    private final Player player;
+    private boolean isAlive;
+    private boolean hasBodyArmor;
 
-    public Human(Player player, int isAlive){
+    public Human(Player player, boolean isAlive, boolean hasBodyArmor){
         this.player = player;
         this.isAlive = isAlive;
+        this.hasBodyArmor = hasBodyArmor;
     }
 
     public Player getHuman() {
@@ -20,11 +22,17 @@ public class Human{
         return ChatColor.GREEN;
     }
 
-    public void setAliveStatus(int alive){
+    public boolean isAlive(){
+        return this.isAlive;
+    }
+
+    public boolean getBodyArmor(){
+        return this.hasBodyArmor;
+    }
+
+    public void setAliveStatus(boolean alive){
         this.isAlive = alive;
     }
 
-    public boolean isAlive(){
-        return this.isAlive == 1;
-    }
+
 }
