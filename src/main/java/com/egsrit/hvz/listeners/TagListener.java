@@ -23,7 +23,7 @@ public class TagListener implements Listener {
             String entitySpecial = zombieList.get(entity.getDisplayName()).getSpecialStatus(); // can be null, if human
             String damagerSpecial = zombieList.get(damager.getDisplayName()).getSpecialStatus();
             if((damagerSpecial.equals("Witch") || damagerSpecial.equals("Twitch")) && entitySpecial.equals("Zombie")){
-                //stun zombie
+                StunListener.stunZombie(entity, damager, damagerSpecial);
             }
             if(zombieList.get(damager.getDisplayName()).canTagHumans()){ // is Zombie stunned?
                 if(humanList.get(entity.getDisplayName()).getBodyArmor()){ // does Human have body armor?

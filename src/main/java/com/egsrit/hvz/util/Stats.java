@@ -20,7 +20,10 @@ public class Stats {
 
     public static void addZombie(Player p, int stunTime, String specialStatus){
         tagMap.putIfAbsent(p.getDisplayName(), new ArrayList<>());
-        zombies.put(p.getDisplayName(), new HvzZombie(p, stunTime, specialStatus, true, true));
+        HvzZombie newZombie = new HvzZombie(p, stunTime, specialStatus, true, true);
+        zombies.put(p.getDisplayName(), newZombie );
+        p.sendMessage("You are now a " + newZombie.getNameTagColor() + newZombie.getSpecialStatus() + "!");
+        p.sendMessage("Stun time: " + newZombie.getStunTime());
     }
 
     public static void addTag(Player h, Player z){

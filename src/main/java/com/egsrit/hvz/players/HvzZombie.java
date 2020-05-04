@@ -4,8 +4,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class HvzZombie {
-    private Player player;
-    private int stunTime;
+    private final Player player;
+    private final int stunTime;
     private String specialStatus;
     private boolean canBeStunned;
     private boolean canTag;
