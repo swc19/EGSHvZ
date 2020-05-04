@@ -21,6 +21,7 @@ public class StunListener implements Listener {
     @EventHandler
     public void onStunTag(EntityDamageByEntityEvent e){ // Witch/Twitch hits zombie
         if(e.getEntity() instanceof Player && e.getDamager() instanceof Player){
+            e.setCancelled(true);
             Player entity = (Player) e.getEntity(); // the Zombie
             Player damager = (Player) e.getDamager(); // the Witch/Twitch
             String entitySpecialStatus = zombieList.get(entity.getDisplayName()).getSpecialStatus();
@@ -40,6 +41,7 @@ public class StunListener implements Listener {
     @EventHandler
     public void onStunSnowball(EntityDamageByEntityEvent e){
         if(e.getEntity() instanceof Player && e.getDamager() instanceof Snowball){
+            e.setCancelled(true);
             Player zombie = (Player) e.getEntity();
             Snowball snowball = (Snowball) e.getDamager();
             if(snowball.getShooter() instanceof Player) {
@@ -61,6 +63,7 @@ public class StunListener implements Listener {
     @EventHandler
     public void onStunArrow(EntityDamageByEntityEvent e){
         if(e.getEntity() instanceof Player && e.getDamager() instanceof Arrow){
+            e.setCancelled(true);
             Player zombie = (Player) e.getEntity();
             Arrow arrow = (Arrow) e.getDamager();
             if(arrow.getShooter() instanceof Player){
@@ -83,7 +86,6 @@ public class StunListener implements Listener {
                 }
             }
         }
-
     }
     public static void stunZombie(Player zombie, Player damager, String special){
         ChatColor color;

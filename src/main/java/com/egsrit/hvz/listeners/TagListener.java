@@ -18,6 +18,7 @@ public class TagListener implements Listener {
         HashMap<String, HvzZombie> zombieList = Stats.getZombies();
 
         if(e.getEntity() instanceof Player && e.getDamager() instanceof Player){
+            e.setCancelled(true);
             Player entity = (Player) e.getEntity();
             Player damager = (Player) e.getDamager();
             String entitySpecial = zombieList.get(entity.getDisplayName()).getSpecialStatus(); // can be null, if human
