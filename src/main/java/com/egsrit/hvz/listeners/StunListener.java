@@ -14,8 +14,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import java.util.HashMap;
 
 public class StunListener implements Listener {
-    private static HashMap<String, Human> humanList = Stats.getHumans();
-    private static HashMap<String, HvzZombie> zombieList = Stats.getZombies();
+    private static final HashMap<String, Human> humanList = Stats.getHumans();
+    private static final HashMap<String, HvzZombie> zombieList = Stats.getZombies();
     // needs another event handler for seeing which weapon was used to stun the zombie (blaster, sock, elephant blaster)
 
     @EventHandler
@@ -28,7 +28,7 @@ public class StunListener implements Listener {
             String damagerSpecialStatus = zombieList.get(damager.getDisplayName()).getSpecialStatus();
             if((damagerSpecialStatus.equals("Witch") || damagerSpecialStatus.equals("Twitch")) && zombieList.get(entity.getDisplayName()) != null){
                 e.setCancelled(true);
-                if(zombieList.get(entity.getDisplayName()).canBeStunned()){
+                if(Stats.getStunCooldown(entity) <= System.currentTimeMillis()/1000){
                     stunZombie(entity, damager, entitySpecialStatus);
                     Stats.addStun(entity, damager);
                 }
@@ -49,7 +49,7 @@ public class StunListener implements Listener {
                 Player damager = (Player) snowball.getShooter();
                 if(humanList.get(damager.getDisplayName()).isAlive()){
                     // All special zombies can be stunned by a snowball/sock
-                    if(zombieList.get(zombie.getDisplayName()).canBeStunned()){
+                    if(Stats.getStunCooldown(zombie) <= System.currentTimeMillis()/1000){
                         e.setCancelled(true);
                         stunZombie(zombie, damager, null); // only humans will be in this action
                         Stats.addStun(zombie, damager);
@@ -70,7 +70,7 @@ public class StunListener implements Listener {
             if(arrow.getShooter() instanceof Player){
                 Player damager = (Player) arrow.getShooter();
                 if(humanList.get(damager.getDisplayName()).isAlive()){
-                    if(zombieList.get(zombie.getDisplayName()).canBeStunned()){
+                    if(Stats.getStunCooldown(zombie) <= System.currentTimeMillis()/1000){
                         e.setCancelled(true);
                         String specialStatus = zombieList.get(zombie.getDisplayName()).getSpecialStatus();
                         switch(specialStatus){
@@ -100,8 +100,15 @@ public class StunListener implements Listener {
             color = zombieList.get(damager.getDisplayName()).getNameTagColor();
             message = zombieList.get(damager.getDisplayName()).getSpecialStatus() + " ";
         }
-        zombieList.get(zombie.getDisplayName()).setStun(true);
-        zombie.sendMessage("You've been stunned by " + color + message + damager.getDisplayName() + "!");
-        //use zombie's stun timer, make them unable to hit players/tag them
+        Long stunCooldown = Stats.getStunCooldown(zombie);
+        if(stunCooldown != null){ // If player has been stunned before
+            if(stunCooldown > System.currentTimeMillis()/1000){
+                damager.sendMessage(ChatColor.RED + zombie.getDisplayName() + " is already stunned!");
+                return;
+            }
+        }
+        damager.sendMessage(ChatColor.GREEN + "You've stunned " + zombie.getDisplayName() + "!");
+        Stats.setStunCooldown(zombie, System.currentTimeMillis()/1000 + zombieList.get(zombie.getDisplayName()).getStunTime());
+        zombie.sendMessage(ChatColor.RED + "You've been stunned by " + color + message + damager.getDisplayName() + ChatColor.RED + "!");
     }
 }

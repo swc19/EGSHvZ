@@ -10,12 +10,11 @@ public class HvzZombie {
     private boolean canBeStunned;
     private boolean canTag;
 
-    public HvzZombie(Player player, int stunTime, String specialStatus, boolean canBeStunned, boolean canTag){
+    public HvzZombie(Player player, int stunTime, String specialStatus){
         this.player = player;
         this.stunTime = stunTime;
         this.specialStatus = specialStatus;
-        this.canBeStunned = canBeStunned;
-        this.canTag = canTag;
+
     }
     public Player getZombie() {
         return this.player;
@@ -23,15 +22,8 @@ public class HvzZombie {
     public int getStunTime(){
         return this.stunTime;
     }
-    public boolean canBeStunned(){
-        return this.canBeStunned;
-    }
-
     public String getSpecialStatus(){
         return this.specialStatus;
-    }
-    public boolean canTagHumans(){
-        return this.canTag;
     }
     public ChatColor getNameTagColor(){
         switch(this.specialStatus){

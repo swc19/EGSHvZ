@@ -12,6 +12,7 @@ public class Stats {
     private static final HashMap<String, HvzZombie> zombies = new HashMap<>();
     private static final HashMap<String, ArrayList<String>> stunMap = new HashMap<>();
     private static final HashMap<String, ArrayList<String>> tagMap = new HashMap<>();
+    private static final HashMap<String, Long> stuns = new HashMap<>();
 
     public static void addHuman(Player p){
         stunMap.putIfAbsent(p.getDisplayName(), new ArrayList<>());
@@ -20,7 +21,7 @@ public class Stats {
 
     public static void addZombie(Player p, int stunTime, String specialStatus){
         tagMap.putIfAbsent(p.getDisplayName(), new ArrayList<>());
-        HvzZombie newZombie = new HvzZombie(p, stunTime, specialStatus, true, true);
+        HvzZombie newZombie = new HvzZombie(p, stunTime, specialStatus);
         zombies.put(p.getDisplayName(), newZombie );
         p.sendMessage("You are now a " + newZombie.getNameTagColor() + newZombie.getSpecialStatus() + "!");
         p.sendMessage("Stun time: " + newZombie.getStunTime());
@@ -53,5 +54,11 @@ public class Stats {
 
     public static ArrayList<String> getTagged(Player z){
         return tagMap.get(z.getDisplayName());
+    }
+    public static Long getStunCooldown(Player p) {
+        return stuns.get(p.getDisplayName());
+    }
+    public static void setStunCooldown(Player p, Long time) {
+        stuns.put(p.getDisplayName(), time);
     }
 }

@@ -25,7 +25,7 @@ public class TagListener implements Listener {
             if((damagerSpecial.equals("Witch") || damagerSpecial.equals("Twitch")) && entitySpecial.equals("Zombie")){
                 StunListener.stunZombie(entity, damager, damagerSpecial);
             }
-            if(zombieList.get(damager.getDisplayName()).canTagHumans()){ // is Zombie stunned?
+            if(Stats.getStunCooldown(damager) <= System.currentTimeMillis()/1000){ // is Zombie stunned?
                 if(humanList.get(entity.getDisplayName()).getBodyArmor()){ // does Human have body armor?
                     //break body armor, alert zombie that human had body armor, give human some cooldown on body armor
                 } else {
@@ -38,7 +38,7 @@ public class TagListener implements Listener {
                             zombieList.get(damager.getDisplayName()).getSpecialStatus() + " " +
                             damager.getDisplayName() + "!");
                 }
-            } else if(!zombieList.get(damager.getDisplayName()).canTagHumans()) {
+            } else if(Stats.getStunCooldown(damager) > System.currentTimeMillis()/1000) {
                 damager.sendMessage("You are stunned and cannot tag!");
             } // else statement would be human attacking human
         }
