@@ -1,23 +1,17 @@
 package com.egsrit.hvz.players;
 
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 public class HvzZombie {
-    private final Player player;
-    private final int stunTime;
+    private final String player;
+    private int stunTime;
     private String specialStatus;
-    private boolean canBeStunned;
-    private boolean canTag;
 
-    public HvzZombie(Player player, int stunTime, String specialStatus){
+    public HvzZombie(String player, int stunTime, String specialStatus){
         this.player = player;
         this.stunTime = stunTime;
         this.specialStatus = specialStatus;
 
-    }
-    public Player getZombie() {
-        return this.player;
     }
     public int getStunTime(){
         return this.stunTime;
@@ -41,10 +35,10 @@ public class HvzZombie {
                 return ChatColor.RED;
         }
     }
-    public void setStun(boolean stun){
-        this.canBeStunned = stun;
-    }
     public void setSpecialStatus(String specialStatus){
         this.specialStatus = this.specialStatus;
+    }
+    public void setStunTime(int stunTime){
+        this.stunTime = stunTime;
     }
 }

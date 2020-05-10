@@ -1,8 +1,8 @@
 name: HvZPlugin
-version: 0.1.1
+version: 0.0.1
 main: com.egsrit.hvz.HvZPlugin
 api-version: 1.13
 commands:
     hvz:
         description: Add a player to the humans or zombies
-        usage: /<command> [human|zombie] [specialType]
+        usage: /<command> [human|zombie]

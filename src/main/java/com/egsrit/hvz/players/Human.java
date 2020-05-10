@@ -1,20 +1,19 @@
 package com.egsrit.hvz.players;
 
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 public class Human{
-    private final Player player;
+    private final String player;
     private boolean isAlive;
     private boolean hasBodyArmor;
 
-    public Human(Player player, boolean isAlive, boolean hasBodyArmor){
+    public Human(String player, boolean isAlive, boolean hasBodyArmor){
         this.player = player;
         this.isAlive = isAlive;
         this.hasBodyArmor = hasBodyArmor;
     }
 
-    public Player getHuman() {
+    public String getPlayerName() {
         return this.player;
     }
 
@@ -28,6 +27,10 @@ public class Human{
 
     public boolean getBodyArmor(){
         return this.hasBodyArmor;
+    }
+
+    public void setBodyArmor(boolean bodyArmor){
+        this.hasBodyArmor = bodyArmor;
     }
 
     public void setAliveStatus(boolean alive){
