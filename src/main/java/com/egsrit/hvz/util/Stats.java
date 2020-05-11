@@ -2,7 +2,6 @@ package com.egsrit.hvz.util;
 
 import com.egsrit.hvz.players.Human;
 import com.egsrit.hvz.players.HvzZombie;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -24,12 +23,11 @@ public class Stats {
     }
 
     public static void addZombie(String pname, int stunTime, String specialStatus, Player p){
-        Player player = Bukkit.matchPlayer(pname).get(0);
         tagMap.putIfAbsent(pname, new ArrayList<>());
         HvzZombie newZombie = new HvzZombie(pname, stunTime, specialStatus);
-        zombies.put(pname, newZombie );
-        player.sendMessage("You are now a " + newZombie.getNameTagColor() + newZombie.getSpecialStatus() + "!");
-        player.sendMessage("Stun time: " + newZombie.getStunTime());
+        zombies.put(pname, newZombie);
+        p.sendMessage("You are now a " + newZombie.getNameTagColor() + newZombie.getSpecialStatus() + "!");
+        p.sendMessage("Stun time: " + newZombie.getStunTime());
     }
 
     public static void addTag(String h, String z){

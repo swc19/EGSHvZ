@@ -35,10 +35,4 @@ public class HvzZombie {
                 return ChatColor.RED;
         }
     }
-    public void setSpecialStatus(String specialStatus){
-        this.specialStatus = this.specialStatus;
-    }
-    public void setStunTime(int stunTime){
-        this.stunTime = stunTime;
-    }
 }
