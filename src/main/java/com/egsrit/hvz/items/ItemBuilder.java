@@ -94,6 +94,7 @@ public class ItemBuilder {
         } catch(Exception ignored){}
         return this;
     }
+
     public ItemBuilder hideFlags(ItemFlag... flags){
         ItemMeta im = is.getItemMeta();
         im.addItemFlags(flags);

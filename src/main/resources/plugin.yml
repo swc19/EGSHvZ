@@ -6,3 +6,4 @@ commands:
     hvz:
         description: Add a player to the humans or zombies
         usage: /<command> [human|zombie] [specialType]
+depend: [ArmorEquipEvent]
