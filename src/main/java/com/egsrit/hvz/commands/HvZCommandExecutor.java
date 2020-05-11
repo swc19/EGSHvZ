@@ -52,7 +52,7 @@ public class HvZCommandExecutor implements CommandExecutor {
                             case "all":
                                 return showList(sender, "all");
                             default:
-                                sender.sendMessage(ChatColor.RED + "Usage: /hvz list human|zombie|all");
+                                sender.sendMessage(ChatColor.RED + "Usage: /hvz list human | zombie | all");
                                 return true;
                         }
                     }
@@ -62,7 +62,7 @@ public class HvZCommandExecutor implements CommandExecutor {
                     if(args.length > 2){
                         return giveShirt(sender, args[2], args[1]);
                     } else {
-                        sender.sendMessage(ChatColor.RED + "Usage: /hvz giveShirt|shirt type username");
+                        sender.sendMessage(ChatColor.RED + "Usage: /hvz giveShirt | shirt type username");
                         return true;
                     }
                 default:
