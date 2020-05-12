@@ -19,23 +19,33 @@ public class Stats {
     public static void addHuman(String pname, Player p){
         stunMap.putIfAbsent(pname, new ArrayList<>());
         humans.put(pname, new Human(pname, true, false));
+        if(getCooldowns().containsKey(pname) && getCooldowns().get(pname) > System.currentTimeMillis()/1000){
+            setStunCooldown(pname, System.currentTimeMillis()/1000 - 1);
+        }
         p.sendMessage(ChatColor.GREEN + "You are now a Human!");
+        PlayerScoreboard.updateBoard(p);
     }
 
     public static void addZombie(String pname, int stunTime, String specialStatus, Player p){
+        if(getHumans().containsKey(pname)){
+            getHumans().put(pname, new Human(pname, false, false));
+        }
         tagMap.putIfAbsent(pname, new ArrayList<>());
         HvzZombie newZombie = new HvzZombie(pname, stunTime, specialStatus);
         zombies.put(pname, newZombie);
         p.sendMessage("You are now a " + newZombie.getNameTagColor() + newZombie.getSpecialStatus() + "!");
         p.sendMessage("Stun time: " + newZombie.getStunTime());
+        PlayerScoreboard.updateBoard(p);
     }
 
     public static void addTag(String h, String z){
+        tagMap.putIfAbsent(z, new ArrayList<>());
         ArrayList<String> tagList = tagMap.get(z);
         tagList.add(h);
     }
 
     public static void addStun(String h, String z){
+        stunMap.putIfAbsent(h, new ArrayList<>());
         ArrayList<String> stunList = stunMap.get(h);
         stunList.add(z);
     }
@@ -56,6 +66,9 @@ public class Stats {
     }
     public static ArrayList<String> getTagged(String z){
         return tagMap.get(z);
+    }
+    public static Map<String, Long> getCooldowns(){
+        return stuns;
     }
     public static Long getStunCooldown(String p) {
         return stuns.get(p);
