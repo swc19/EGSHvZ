@@ -6,6 +6,7 @@ import com.egsrit.hvz.util.PlayerScoreboard;
 import com.egsrit.hvz.util.Stats;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,8 +27,9 @@ public class TagListener implements Listener {
             Player damager = (Player) e.getDamager();
             if(entity != damager){
                 // ^ this will probably never be the case but never know
-                if(humanList.containsKey(entity.getDisplayName())) {
+                if(humanList.containsKey(entity.getDisplayName()) || humanList.containsKey(damager.getDisplayName())) {
                     // event gets cancelled if anybody hits a human, so there's no human v human damage
+                    // also gets cancelled if a human is brave enough to hit a zombie, though nothing will happen
                     e.setCancelled(true);
                     if (zombieList.containsKey(damager.getDisplayName()) && humanList.containsKey(entity.getDisplayName())) {
                         // only actually begin to register a tag if it's a zombie hitting a human
@@ -36,6 +38,9 @@ public class TagListener implements Listener {
                             if (false) {
                                 // TODO function to check human's body armor, then logic after to break/cooldown
                             } else {
+                                damager.playSound(damager.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.8f, 1.0f);
+                                entity.playSound(entity.getLocation(), Sound.ENTITY_ZOMBIE_AMBIENT, 0.8f, 1.0f);
+
                                 Stats.addZombie(entity.getDisplayName(), 300, "Zombie", entity); // make human a zombie
                                 Stats.addTag(entity.getDisplayName(), damager.getDisplayName()); // register the tag
                                 PlayerScoreboard.updateBoard(entity); // update scoreboards

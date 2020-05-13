@@ -5,6 +5,7 @@ import com.egsrit.hvz.players.HvzZombie;
 import com.egsrit.hvz.util.PlayerScoreboard;
 import com.egsrit.hvz.util.Stats;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
@@ -136,6 +137,9 @@ public class StunListener implements Listener {
                 return;
             }
         }
+        damager.playSound(damager.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 0.8f, 0.5f);
+        zombie.playSound(zombie.getLocation(), Sound.BLOCK_REDSTONE_TORCH_BURNOUT, 0.8f, 0.7f);
+
         damager.sendMessage(ChatColor.GREEN + "You've stunned " + zombie.getDisplayName() + "!");
         Stats.setStunCooldown(zombie.getDisplayName(), System.currentTimeMillis()/1000 + zombieList.get(zombie.getDisplayName()).getStunTime());
         zombie.sendMessage(ChatColor.RED + "You've been stunned by " + color + message + damager.getDisplayName() + ChatColor.RED + "!");

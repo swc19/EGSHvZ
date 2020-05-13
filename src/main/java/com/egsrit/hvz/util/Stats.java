@@ -26,6 +26,7 @@ public class Stats {
             // If player used an antivirus, remove any stun timer from when they were a zombie
             setStunCooldown(pname, System.currentTimeMillis()/1000 - 1);
         }
+        Human.giveItems(p);
         p.sendMessage(ChatColor.GREEN + "You are now a Human!");
         PlayerScoreboard.updateBoard(p);
     }

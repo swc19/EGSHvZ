@@ -25,6 +25,10 @@ public class ItemBuilder {
         is = new ItemStack(m, quantity);
     }
 
+    public ItemBuilder(ItemStack is){
+        this.is = is;
+    }
+
     public ItemBuilder setName(String name){
         ItemMeta im = is.getItemMeta();
         im.setDisplayName(name);
@@ -58,6 +62,13 @@ public class ItemBuilder {
             is.setItemMeta((ItemMeta) im);
         } catch (Exception ignored){}
         return this;
+    }
+
+    public int getDurability(){
+        try{
+            Damageable im = (Damageable) is.getItemMeta();
+            return im.getDamage();
+        } catch (Exception ignored){return -1;}
     }
 
     public ItemBuilder setLore(String... lore){
