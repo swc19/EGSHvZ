@@ -9,40 +9,36 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class ArmorListener implements Listener {
-    private static final Map<String, Boolean> hasSpecialShirt = new HashMap<>();
 
     @EventHandler
     public void onArmorEquip(ArmorEquipEvent e){
+        // Uses ArmorEquip dependency to tell if a player is equipping/unequipping armor in any way
         Player player = e.getPlayer();
         int stunTimer = 300;
         if(e.getNewArmorPiece() != null && e.getNewArmorPiece().getType() != Material.AIR){
-            if(!hasSpecialShirt.containsKey(player.getDisplayName()) || !hasSpecialShirt.get(player.getDisplayName())){
-                if(e.getNewArmorPiece().getType() == Material.LEATHER_CHESTPLATE){
-                    if(e.getNewArmorPiece().hasItemMeta()){
-                        ItemStack chestplate = e.getNewArmorPiece();
-                        String[] shirtName = chestplate.getItemMeta().getDisplayName().split(" ");
-                        if(shirtName[1].equals("Shirt")) {
-                            switch (ChatColor.stripColor(shirtName[0])) {
-                                case "Witch":
-                                case "Twitch":
-                                    stunTimer = 10;
-                                    break;
-                                case "Jackal":
-                                case "Tank":
-                                    stunTimer = 150;
-                                    break;
-                                case "Boomer":
-                                    break;
-                                default:
-                                    return;
-                            }
-                            Stats.addZombie(player.getDisplayName(), stunTimer, shirtName[0], player);
-                            hasSpecialShirt.put(player.getDisplayName(), true);
+            if(e.getNewArmorPiece().getType() == Material.LEATHER_CHESTPLATE){
+                if(e.getNewArmorPiece().hasItemMeta()){ // All custom spawned shirts will have meta
+                    ItemStack chestplate = e.getNewArmorPiece();
+                    String[] shirtName = chestplate.getItemMeta().getDisplayName().split(" ");
+                    if(shirtName[1].equals("Shirt")) {
+                        switch (ChatColor.stripColor(shirtName[0])) {
+                            // Only check for special zombie shirts
+                            case "Witch":
+                            case "Twitch":
+                                stunTimer = 10;
+                                break;
+                            case "Jackal":
+                            case "Tank":
+                                stunTimer = 150;
+                                break;
+                            case "Boomer":
+                                break;
+                            default:
+                                return;
                         }
+                        // Make the wearer of the special shirt that type of zombie
+                        Stats.addZombie(player.getDisplayName(), stunTimer, shirtName[0], player);
                     }
                 }
             }
@@ -50,8 +46,10 @@ public class ArmorListener implements Listener {
             if(e.getOldArmorPiece() != null && e.getOldArmorPiece().getType() != Material.AIR){
                 if(e.getOldArmorPiece().getType() == Material.LEATHER_CHESTPLATE){
                     if(e.getOldArmorPiece().hasItemMeta()){
-                        hasSpecialShirt.put(player.getDisplayName(), false);
-                        Stats.addZombie(player.getDisplayName(), 300, "Zombie", player);
+                        if(e.getOldArmorPiece().getItemMeta().getDisplayName().split(" ")[1].equals("Shirt")){
+                            // When unequipping a special shirt, make the unequipper a regular zombie again
+                            Stats.addZombie(player.getDisplayName(), 300, "Zombie", player);
+                        }
                     }
                 }
             }

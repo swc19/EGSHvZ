@@ -21,40 +21,32 @@ public class TagListener implements Listener {
         Map<String, HvzZombie> zombieList = Stats.getZombies();
 
         if(e.getEntity() instanceof Player && e.getDamager() instanceof Player){
+            // Is player hitting a player?
             Player entity = (Player) e.getEntity();
             Player damager = (Player) e.getDamager();
             if(entity != damager){
-                String entitySpecial = "";
-                String damagerSpecial = "";
-                if(zombieList.containsKey(entity.getDisplayName())){
-                    entitySpecial = zombieList.get(entity.getDisplayName()).getSpecialStatus();
-                }
-                if(zombieList.containsKey(damager.getDisplayName())){
-                    damagerSpecial = zombieList.get(damager.getDisplayName()).getSpecialStatus();
-                }
-                if((damagerSpecial.equals("Witch") || damagerSpecial.equals("Twitch")) && entitySpecial.equals("Zombie")){
+                // ^ this will probably never be the case but never know
+                if(humanList.containsKey(entity.getDisplayName())) {
+                    // event gets cancelled if anybody hits a human, so there's no human v human damage
                     e.setCancelled(true);
-                    StunListener.stunZombie(entity, damager);
-                }
-                if(humanList.containsKey(entity.getDisplayName()) && humanList.get(entity.getDisplayName()).isAlive()) {
-                    e.setCancelled(true);
-                    if (zombieList.containsKey(damager.getDisplayName()) && (!humanList.containsKey(damager.getDisplayName()) || !humanList.get(damager.getDisplayName()).isAlive())) {
-                        // is the person being tagged a human and are they alive?
-                        if (!Stats.getCooldowns().containsKey(damager.getDisplayName()) || Stats.getStunCooldown(damager.getDisplayName()) <= System.currentTimeMillis() / 1000) { // is Zombie stunned?
-                            if (humanList.get(entity.getDisplayName()).getBodyArmor()) { // does Human have body armor?
-                                //break body armor, alert zombie that human had body armor, give human some cooldown on body armor
+                    if (zombieList.containsKey(damager.getDisplayName()) && humanList.containsKey(entity.getDisplayName())) {
+                        // only actually begin to register a tag if it's a zombie hitting a human
+                        if (!Stats.getCooldowns().containsKey(damager.getDisplayName()) || Stats.getStunCooldown(damager.getDisplayName()) <= System.currentTimeMillis() / 1000) {
+                            // check if the zombie's stunned
+                            if (false) {
+                                // TODO function to check human's body armor, then logic after to break/cooldown
                             } else {
                                 Stats.addZombie(entity.getDisplayName(), 300, "Zombie", entity); // make human a zombie
                                 Stats.addTag(entity.getDisplayName(), damager.getDisplayName()); // register the tag
-                                PlayerScoreboard.updateBoard(entity);
+                                PlayerScoreboard.updateBoard(entity); // update scoreboards
                                 PlayerScoreboard.updateBoard(damager);
                                 Bukkit.broadcastMessage(ChatColor.GOLD + entity.getDisplayName() + " has been tagged by " +
                                         zombieList.get(damager.getDisplayName()).getNameTagColor() +
                                         zombieList.get(damager.getDisplayName()).getSpecialStatus() + " " +
-                                        damager.getDisplayName() + "!");
+                                        damager.getDisplayName() + "!"); // might not be a broadcast if too many tags
                             }
                         } else {
-                            e.setCancelled(true);
+                            // zombie is stunned
                             damager.sendMessage(ChatColor.RED + "You are stunned and cannot tag!");
                             damager.sendMessage(ChatColor.GOLD + "Stun time remaining: " + ChatColor.RED + (Stats.getStunCooldown(damager.getDisplayName()) - System.currentTimeMillis() / 1000) + " seconds");
                         }

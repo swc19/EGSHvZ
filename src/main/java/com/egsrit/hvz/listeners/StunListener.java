@@ -19,36 +19,35 @@ public class StunListener implements Listener {
     private static final Map<String, HvzZombie> zombieList = Stats.getZombies();
 
     @EventHandler
-    public void onStunTag(EntityDamageByEntityEvent e){ // Witch/Twitch hits zombie
+    public void onStunTag(EntityDamageByEntityEvent e){
+        /* This method checks if a Witch or Twitch has stunned a zombie.
+        * Only these two special types can stun a zombie through tagging. */
         if(e.getEntity() instanceof Player && e.getDamager() instanceof Player && e.getEntity() != e.getDamager()){
-            Player entity = (Player) e.getEntity(); // the Zombie
+            Player zombie = (Player) e.getEntity(); // the Zombie
             Player damager = (Player) e.getDamager(); // the Witch/Twitch
-            String entitySpecialStatus = "";
-            String damagerSpecialStatus = "";
-            if(zombieList.containsKey(entity.getDisplayName())){
-                // These cancel events are kinda weird, should change around to be able to cancel once without disabling pvp everywhere
+            if(zombieList.containsKey(zombie.getDisplayName()) && zombieList.containsKey(damager.getDisplayName())){
+                // Ensure that both the entity and damager are zombie types, check for actual damager type later
+                // If a zombie is present in the zombieList, they cannot be an alive human.
                 e.setCancelled(true);
-                entitySpecialStatus = ChatColor.stripColor(zombieList.get(entity.getDisplayName()).getSpecialStatus());
-            }
-            if(zombieList.containsKey(damager.getDisplayName())){
-                e.setCancelled(true);
-                damagerSpecialStatus = ChatColor.stripColor(zombieList.get(damager.getDisplayName()).getSpecialStatus());
-            }
-            if((damagerSpecialStatus.equals("Witch") || damagerSpecialStatus.equals("Twitch")) && zombieList.get(entity.getDisplayName()) != null
-                    && (!humanList.containsKey(entity.getDisplayName()) || !humanList.get(entity.getDisplayName()).isAlive())){
-                e.setCancelled(true);
-                if(!Stats.getCooldowns().containsKey(damager.getDisplayName()) || Stats.getStunCooldown(damager.getDisplayName()) <= System.currentTimeMillis()/1000) {
-                    if (!Stats.getCooldowns().containsKey(entity.getDisplayName()) || Stats.getStunCooldown(entity.getDisplayName()) <= System.currentTimeMillis() / 1000) {
-                        stunZombie(entity, damager);
-                        Stats.addStun(entity.getDisplayName(), damager.getDisplayName());
-                        PlayerScoreboard.updateBoard(entity);
-                        PlayerScoreboard.updateBoard(damager);
+                String damagerSpecialStatus = ChatColor.stripColor(zombieList.get(damager.getDisplayName()).getSpecialStatus());
+                if(damagerSpecialStatus.equals("Witch") || damagerSpecialStatus.equals("Twitch")){
+                    // Check whether the damager is a Witch or Twitch
+                    if(!Stats.getCooldowns().containsKey(damager.getDisplayName()) || Stats.getStunCooldown(damager.getDisplayName()) <= System.currentTimeMillis()/1000) {
+                        // Check if the damager is stunned
+                        if (!Stats.getCooldowns().containsKey(zombie.getDisplayName()) || Stats.getStunCooldown(zombie.getDisplayName()) <= System.currentTimeMillis() / 1000) {
+                            // Check if the zombie is stunned (cannot restun)
+                            stunZombie(zombie, damager);
+                            Stats.addStun(damager.getDisplayName(), zombie.getDisplayName());
+                            // Update each scoreboard to reflect the stats/stun time
+                            PlayerScoreboard.updateBoard(zombie);
+                            PlayerScoreboard.updateBoard(damager);
+                        } else {
+                            damager.sendMessage(zombieList.get(zombie.getDisplayName()).getNameTagColor() + zombieList.get(zombie.getDisplayName()).getSpecialStatus() +  " " + zombie.getDisplayName() + ChatColor.RED + " is already stunned!");
+                        }
                     } else {
-                        damager.sendMessage(zombieList.get(entity.getDisplayName()).getNameTagColor() + zombieList.get(entity.getDisplayName()).getSpecialStatus() +  " " + entity.getDisplayName() + ChatColor.RED + " is already stunned!");
+                        damager.sendMessage(ChatColor.RED + "You are currently stunned and cannot stun!");
+                        damager.sendMessage(ChatColor.GOLD + "Stun time remaining: " + ChatColor.RED + (Stats.getStunCooldown(damager.getDisplayName()) - System.currentTimeMillis()/1000) + " seconds");
                     }
-                } else {
-                    damager.sendMessage(ChatColor.RED + "You are currently stunned and cannot stun!");
-                    damager.sendMessage(ChatColor.GOLD + "Stun time remaining: " + ChatColor.RED + (Stats.getStunCooldown(damager.getDisplayName()) - System.currentTimeMillis()/1000) + " seconds");
                 }
             }
         }
@@ -61,13 +60,14 @@ public class StunListener implements Listener {
             Snowball snowball = (Snowball) e.getDamager();
             if(snowball.getShooter() instanceof Player && snowball.getShooter() != zombie) {
                 Player damager = (Player) snowball.getShooter();
-                if(humanList.get(damager.getDisplayName()).isAlive() && (zombieList.containsKey(zombie.getDisplayName())
-                        && (!humanList.containsKey(zombie.getDisplayName()) || !humanList.get(zombie.getDisplayName()).isAlive()))){
+                if(humanList.containsKey(damager.getDisplayName()) && zombieList.containsKey(zombie.getDisplayName())){
+                    // Check if the shooter is a human and the entity is a zombie
                     // All special zombies can be stunned by a snowball/sock
+                    e.setCancelled(true);
+                    snowball.remove();
                     if(!Stats.getCooldowns().containsKey(damager.getDisplayName()) || Stats.getStunCooldown(zombie.getDisplayName()) <= System.currentTimeMillis()/1000){
-                        e.setCancelled(true);
-                        snowball.remove();
-                        stunZombie(zombie, damager); // only humans will be in this action
+                        // If the zombie isn't already stunned, stun the zombie
+                        stunZombie(zombie, damager);
                         Stats.addStun(damager.getDisplayName(), zombie.getDisplayName());
                         PlayerScoreboard.updateBoard(zombie);
                         PlayerScoreboard.updateBoard(damager);
@@ -87,28 +87,25 @@ public class StunListener implements Listener {
             Arrow arrow = (Arrow) e.getDamager();
             if(arrow.getShooter() instanceof Player && arrow.getShooter() != zombie){
                 Player damager = (Player) arrow.getShooter();
-                if((humanList.containsKey(damager.getDisplayName()) && humanList.containsKey(zombie.getDisplayName()))
-                        && humanList.get(damager.getDisplayName()).isAlive() && humanList.get(zombie.getDisplayName()).isAlive()){
-                    // Human hitting human during a game
-                    arrow.remove();
+                if(humanList.containsKey(damager.getDisplayName()) && humanList.containsKey(zombie.getDisplayName())){
+                    // Human hitting human during a game, cancel damage and move on
                     e.setCancelled(true);
+                    arrow.remove();
                     return;
                 }
-                if(humanList.get(damager.getDisplayName()).isAlive() && (zombieList.containsKey(zombie.getDisplayName())
-                        && (!humanList.containsKey(zombie.getDisplayName()) || !humanList.get(zombie.getDisplayName()).isAlive()))){
+                if(humanList.containsKey(damager.getDisplayName()) && zombieList.containsKey(zombie.getDisplayName())){
+                    // Check if the human shot at a zombie
                     e.setCancelled(true);
                     arrow.remove();
                     if(!Stats.getCooldowns().containsKey(zombie.getDisplayName()) || Stats.getStunCooldown(zombie.getDisplayName()) <= System.currentTimeMillis()/1000){
-                        String specialStatus = null;
-                        if(zombieList.containsKey(zombie.getDisplayName())){
-                            specialStatus = ChatColor.stripColor(zombieList.get(zombie.getDisplayName()).getSpecialStatus());
-                        }
+                        String specialStatus = ChatColor.stripColor(zombieList.get(zombie.getDisplayName()).getSpecialStatus());
                         switch(specialStatus){
                             case "Tank":
                             case "Twitch":
                                 damager.sendMessage(ChatColor.RED + "You cannot stun this " + specialStatus + " with a blaster!");
                                 break;
                             default:
+                                // Everything except the above two types can be stunned with a blaster, so default to registering the stun
                                 stunZombie(zombie, damager);
                                 Stats.addStun(damager.getDisplayName(), zombie.getDisplayName());
                                 PlayerScoreboard.updateBoard(zombie);
@@ -125,11 +122,10 @@ public class StunListener implements Listener {
     public static void stunZombie(Player zombie, Player damager){
         ChatColor color;
         String message;
-        if(Stats.getHumans().containsKey(damager.getDisplayName()) && Stats.getHumans().get(damager.getDisplayName()).isAlive()){ // human stunned zombie
+        if(Stats.getHumans().containsKey(damager.getDisplayName())){ // human stunned zombie
             color = humanList.get(damager.getDisplayName()).getNameTagColor();
             message = "";
-        }
-        else{ // witch/twitch stunned zombie
+        } else { // witch/twitch stunned zombie
             color = zombieList.get(damager.getDisplayName()).getNameTagColor();
             message = zombieList.get(damager.getDisplayName()).getSpecialStatus() + " ";
         }

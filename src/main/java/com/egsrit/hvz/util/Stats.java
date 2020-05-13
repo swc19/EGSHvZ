@@ -17,9 +17,13 @@ public class Stats {
     private static final Map<String, Long> stuns = new HashMap<>();
 
     public static void addHuman(String pname, Player p){
+        // Designates a player as a human
+        // An entry in the humans list means that the player is an alive human
         stunMap.putIfAbsent(pname, new ArrayList<>());
-        humans.put(pname, new Human(pname, true, false));
+        humans.put(pname, new Human(pname, true));
+        zombies.remove(pname); // Remove any instance of the player from the zombie list
         if(getCooldowns().containsKey(pname) && getCooldowns().get(pname) > System.currentTimeMillis()/1000){
+            // If player used an antivirus, remove any stun timer from when they were a zombie
             setStunCooldown(pname, System.currentTimeMillis()/1000 - 1);
         }
         p.sendMessage(ChatColor.GREEN + "You are now a Human!");
@@ -27,24 +31,26 @@ public class Stats {
     }
 
     public static void addZombie(String pname, int stunTime, String specialStatus, Player p){
-        if(getHumans().containsKey(pname)){
-            getHumans().put(pname, new Human(pname, false, false));
-        }
+        // Designates a player as a (optionally special) zombie
         tagMap.putIfAbsent(pname, new ArrayList<>());
+        stunMap.putIfAbsent(pname, new ArrayList<>()); // Used for Witch/Twitch stuns, putIfAbsent if original zombie
         HvzZombie newZombie = new HvzZombie(pname, stunTime, specialStatus);
         zombies.put(pname, newZombie);
-        p.sendMessage("You are now a " + newZombie.getNameTagColor() + newZombie.getSpecialStatus() + "!");
-        p.sendMessage("Stun time: " + newZombie.getStunTime());
+        getHumans().remove(pname); // Remove the player from the human list, does not affect stats
+        p.sendMessage(ChatColor.AQUA + "You are now a " + newZombie.getNameTagColor() + newZombie.getSpecialStatus() + "!");
+        p.sendMessage(ChatColor.AQUA + "Stun time: " + newZombie.getStunTime());
         PlayerScoreboard.updateBoard(p);
     }
 
     public static void addTag(String h, String z){
+        // Add a tag event (zombie tags human) to the database
         tagMap.putIfAbsent(z, new ArrayList<>());
         ArrayList<String> tagList = tagMap.get(z);
         tagList.add(h);
     }
 
     public static void addStun(String h, String z){
+        // Add a stun event (human, witch/twitch stuns zombie) to the database
         stunMap.putIfAbsent(h, new ArrayList<>());
         ArrayList<String> stunList = stunMap.get(h);
         stunList.add(z);

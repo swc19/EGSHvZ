@@ -21,6 +21,7 @@ public final class HvZPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ArmorListener(), this);
         getCommand("hvz").setExecutor(new HvZCommandExecutor());
         for(Player p : Bukkit.getOnlinePlayers()){
+            // This will be changed to only update everyone once a new game begins/players select human/zombie
             PlayerScoreboard.updateBoard(p);
         }
     }

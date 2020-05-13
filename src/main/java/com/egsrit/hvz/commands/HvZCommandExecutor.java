@@ -1,7 +1,6 @@
 package com.egsrit.hvz.commands;
 
 import com.egsrit.hvz.items.ItemBuilder;
-import com.egsrit.hvz.players.Human;
 import com.egsrit.hvz.util.Stats;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -33,6 +32,7 @@ public class HvZCommandExecutor implements CommandExecutor {
                     }
                 case "zombie":
                     // Debug command to make a player a (optionally special) zombie
+                    // "Zombie" is a valid special type for a regular zombie
                     if(args.length > 2){ // ex: /hvz zombie Tank swc19
                         return makeZombie(sender, StringUtils.capitalize(args[1]), args[2]);
                     } else {
@@ -57,16 +57,15 @@ public class HvZCommandExecutor implements CommandExecutor {
                         }
                     }
                     return showList(sender,"all");
-                case "giveShirt":
-                case "shirt":
+                case "shirt": // Spawns a shirt to make a player a special zombie
                     if(args.length > 2){
                         return giveShirt(sender, args[2], args[1]);
                     } else {
-                        sender.sendMessage(ChatColor.RED + "Usage: /hvz giveShirt | shirt type username");
+                        sender.sendMessage(ChatColor.RED + "Usage: /hvz shirt type username");
                         return true;
                     }
                 default:
-                    sender.sendMessage(ChatColor.RED + "HVZ command not found.");
+                    sender.sendMessage(ChatColor.RED + "HVZ command not found: " + args[0]);
                     return true;
             }
         }
@@ -74,8 +73,10 @@ public class HvZCommandExecutor implements CommandExecutor {
     }
 
     private boolean makeHuman(CommandSender sender, String username){
+        // Makes a player a human, no matter what they already are
         Player player;
         try{
+            // finding the player by username gives a player object to update scoreboard and send messages
             player = Bukkit.matchPlayer(username).get(0);
         } catch(Exception e){
             sender.sendMessage(ChatColor.RED + "Player not found: " + username);
@@ -83,8 +84,6 @@ public class HvZCommandExecutor implements CommandExecutor {
         }
 
         Stats.addHuman(username, player);
-        //System.out.println(Stats.getStunMap());
-        //System.out.println(Stats.getHumans());
         return true;
     }
 
@@ -96,14 +95,9 @@ public class HvZCommandExecutor implements CommandExecutor {
             sender.sendMessage(ChatColor.RED + "Player not found: " + username);
             return true;
         }
-        if(Stats.getHumans().get(player.getDisplayName()) != null){
-            if(Stats.getHumans().get(player.getDisplayName()).isAlive()){
-                // Kill the human if you make them a zombie to prevent any mixup of types
-                Stats.getHumans().put(player.getDisplayName(), new Human(player.getDisplayName(), false, false));
-            }
-        }
         int stunTimer;
         switch(StringUtils.capitalize(specialStatus)){
+            // Set stun time based on special type
             case "Witch":
             case "Twitch":
                 stunTimer = 10;
@@ -124,27 +118,23 @@ public class HvZCommandExecutor implements CommandExecutor {
         }
 
         Stats.addZombie(username, stunTimer, specialStatus, player);
-        //System.out.println(Stats.getTagMap());
-        //System.out.println(Stats.getZombies().get(player.getDisplayName()).getSpecialStatus());
-        //System.out.println(Stats.getZombies().get(player.getDisplayName()).getStunTime());
         return true;
     }
 
     public boolean showList(CommandSender s, String type){
+        // Shows the sender a list of humans, zombies or all players colorcoded by type
         List<String> players = new ArrayList<>();
         if(type.equals("human") || type.equals("all")){
             for(String pname : Stats.getHumans().keySet()){
-                if(Stats.getHumans().get(pname).isAlive()){
-                    players.add(ChatColor.GREEN + pname);
-                }
+                players.add(ChatColor.GREEN + pname);
             }
         }
         if (type.equals("zombie") || type.equals("all")){
             for(String pname : Stats.getZombies().keySet()){
-                if(Stats.getHumans().get(pname) == null || !Stats.getHumans().get(pname).isAlive()){
-                    // Antivirus can have a person in both lists while being alive
+                if(Stats.getHumans().get(pname) == null){
                     String specialStatus = Stats.getZombies().get(pname).getSpecialStatus();
                     if(!specialStatus.equals("Zombie")){
+                        // Add a bold to have the special zombies stand out in the list
                         players.add(Stats.getZombies().get(pname).getNameTagColor() + "" + ChatColor.BOLD + specialStatus + " " + pname);
 
                     } else {
@@ -164,6 +154,7 @@ public class HvZCommandExecutor implements CommandExecutor {
     }
 
     private boolean giveShirt(CommandSender sender, String username, String type){
+        // Gives a shirt (dyed leather chestplate) that can make a player a given special zombie type
         Player player;
         Color color;
         ChatColor chatColor;
@@ -175,6 +166,7 @@ public class HvZCommandExecutor implements CommandExecutor {
             return true;
         }
         switch(type){
+            // Set the colors for the shirt to be built
             case("Boomer"):
                 color = Color.YELLOW;
                 chatColor = ChatColor.YELLOW;
