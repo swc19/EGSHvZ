@@ -59,6 +59,7 @@ public class PlayerScoreboard {
             public void run() {
                     if(Stats.getStunCooldown(player.getDisplayName()) <= System.currentTimeMillis()/1000){
                         if(Stats.getZombies().containsKey(player.getDisplayName())){
+                            // If a stunned zombie uses an antivirus, they won't be in the zombie list, giving an NPE
                             for(int i = 0; i < Stats.getZombies().get(player.getDisplayName()).getStunTime() + 1; i++){
                                 // Timer can get stuck sometimes (rarely), this will clear all of them including 0 to end the task
                                 board.resetScores(ChatColor.GOLD + "Stun Time: " + ChatColor.RED + i);
