@@ -67,6 +67,5 @@ public class WeaponListener implements Listener {
                 }
             }
         }.runTaskTimer(HvZPlugin.getInstance(), 0L, 1L);
-
     }
 }

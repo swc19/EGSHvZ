@@ -1,18 +1,15 @@
 package com.egsrit.hvz.commands;
 
-import com.egsrit.hvz.items.ItemBuilder;
+import com.egsrit.hvz.items.SpecialItems;
 import com.egsrit.hvz.util.Stats;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +59,13 @@ public class HvZCommandExecutor implements CommandExecutor {
                         return giveShirt(sender, args[2], args[1]);
                     } else {
                         sender.sendMessage(ChatColor.RED + "Usage: /hvz shirt type username");
+                        return true;
+                    }
+                case "give":
+                    if(args.length > 2){
+                        return giveItem(sender, args[2], args[1]);
+                    } else {
+                        sender.sendMessage(ChatColor.RED + "Usage: /hvz give itemType username");
                         return true;
                     }
                 default:
@@ -191,14 +195,63 @@ public class HvZCommandExecutor implements CommandExecutor {
                 sender.sendMessage(ChatColor.RED + "Type " + type + " not found.");
                 return true;
         }
-        ItemStack shirt = new ItemBuilder(Material.LEATHER_CHESTPLATE)
-                .setName(chatColor + type + " Shirt")
-                .setInfiniteDurability()
-                .setLeatherArmorColor(color)
-                .setLore("This shirt will make you a", chatColor + "" + ChatColor.BOLD + type)
-                .hideFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE)
-                .build();
-        player.getInventory().addItem(shirt);
+        player.getInventory().addItem(SpecialItems.makeSpecialShirt(chatColor, color, type));
         return true;
     }
+
+    private boolean giveItem(CommandSender sender, String username, String itemType){
+        Player p;
+        try{
+            p = Bukkit.matchPlayer(username).get(0);
+        } catch (Exception e){
+            sender.sendMessage(ChatColor.RED + "Player not found: " + username);
+            return true;
+        }
+        switch(StringUtils.capitalize(itemType)){
+            case "Antivirus":
+                p.getInventory().addItem(SpecialItems.makeAntivirus());
+                return true;
+            case "Biocade":
+                p.getInventory().addItem(SpecialItems.makeBioCade());
+                return true;
+            case "Bodyarmor":
+                p.getInventory().addItem(SpecialItems.makeBodyArmor());
+                return true;
+            case "Deployablecover":
+            case "Deploy":
+                p.getInventory().addItem(SpecialItems.makeDeployableCover());
+                return true;
+            case "Deplorablecover":
+            case "Deplore":
+                p.getInventory().addItem(SpecialItems.makeDeplorableCover());
+                return true;
+            case "Elephantblaster":
+            case "Elephant":
+                p.getInventory().addItem(SpecialItems.makeElephantBlaster());
+                return true;
+            case "Blaster":
+                p.getInventory().addItem(SpecialItems.makeBlaster());
+                return true;
+            case "Sock":
+            case "Socks":
+                p.getInventory().addItem(SpecialItems.makeSock(10));
+                return true;
+            default:
+                sender.sendMessage(ChatColor.RED + "Couldn't find special item: " + itemType);
+                return true;
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

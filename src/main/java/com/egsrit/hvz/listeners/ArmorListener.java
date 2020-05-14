@@ -39,6 +39,11 @@ public class ArmorListener implements Listener {
                         }
                         // Make the wearer of the special shirt that type of zombie
                         Stats.addZombie(player.getDisplayName(), stunTimer, shirtName[0], player);
+                    } else if(shirtName[1].equals("Armor")){
+                        if(Stats.getHumans().containsKey(player.getDisplayName())){
+                            player.sendMessage(ChatColor.GREEN + "You've equipped your Body Armor!");
+                            Stats.getHumans().get(player.getDisplayName()).setHasBodyArmor(true);
+                        }
                     }
                 }
             }
@@ -46,9 +51,18 @@ public class ArmorListener implements Listener {
             if(e.getOldArmorPiece() != null && e.getOldArmorPiece().getType() != Material.AIR){
                 if(e.getOldArmorPiece().getType() == Material.LEATHER_CHESTPLATE){
                     if(e.getOldArmorPiece().hasItemMeta()){
-                        if(e.getOldArmorPiece().getItemMeta().getDisplayName().split(" ")[1].equals("Shirt")){
-                            // When unequipping a special shirt, make the unequipper a regular zombie again
-                            Stats.addZombie(player.getDisplayName(), 300, "Zombie", player);
+                        String[] itemName = e.getOldArmorPiece().getItemMeta().getDisplayName().split(" ");
+                        if(itemName[1].equals("Shirt")){
+                            if(Stats.getZombies().containsKey(player.getDisplayName())){
+                                // When unequipping a special shirt, make the unequipper a regular zombie again
+                                Stats.addZombie(player.getDisplayName(), 300, "Zombie", player);
+                            }
+                        } else if(itemName[1].equals("Armor")){
+                            if(Stats.getHumans().containsKey(player.getDisplayName())){
+                                // Remove body armor
+                                player.sendMessage(ChatColor.RED + "You have unequipped your Body Armor!");
+                                Stats.getHumans().get(player.getDisplayName()).setHasBodyArmor(false);
+                            }
                         }
                     }
                 }

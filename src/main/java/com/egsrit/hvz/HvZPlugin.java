@@ -1,10 +1,7 @@
 package com.egsrit.hvz;
 
 import com.egsrit.hvz.commands.HvZCommandExecutor;
-import com.egsrit.hvz.listeners.ArmorListener;
-import com.egsrit.hvz.listeners.StunListener;
-import com.egsrit.hvz.listeners.TagListener;
-import com.egsrit.hvz.listeners.WeaponListener;
+import com.egsrit.hvz.listeners.*;
 import com.egsrit.hvz.util.PlayerScoreboard;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -21,6 +18,7 @@ public final class HvZPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new TagListener(), this);
         getServer().getPluginManager().registerEvents(new ArmorListener(), this);
         getServer().getPluginManager().registerEvents(new WeaponListener(), this);
+        getServer().getPluginManager().registerEvents(new SpecialItemListener(), this);
         getCommand("hvz").setExecutor(new HvZCommandExecutor());
         for(Player p : Bukkit.getOnlinePlayers()){
             // This will be changed to only update everyone once a new game begins/players select human/zombie

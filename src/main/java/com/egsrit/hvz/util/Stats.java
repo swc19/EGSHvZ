@@ -20,7 +20,7 @@ public class Stats {
         // Designates a player as a human
         // An entry in the humans list means that the player is an alive human
         stunMap.putIfAbsent(pname, new ArrayList<>());
-        humans.put(pname, new Human(pname, true));
+        humans.put(pname, new Human(pname, false));
         zombies.remove(pname); // Remove any instance of the player from the zombie list
         if(getCooldowns().containsKey(pname) && getCooldowns().get(pname) > System.currentTimeMillis()/1000){
             // If player used an antivirus, remove any stun timer from when they were a zombie

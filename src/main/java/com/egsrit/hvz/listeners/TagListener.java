@@ -6,20 +6,26 @@ import com.egsrit.hvz.util.PlayerScoreboard;
 import com.egsrit.hvz.util.Stats;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class TagListener implements Listener {
+
+    private static final Map<String, Long> gracePeriod = new HashMap<>();
 
     @EventHandler
     public void onTag(EntityDamageByEntityEvent e){
         Map<String, Human> humanList = Stats.getHumans();
         Map<String, HvzZombie> zombieList = Stats.getZombies();
+
 
         if(e.getEntity() instanceof Player && e.getDamager() instanceof Player){
             // Is player hitting a player?
@@ -35,20 +41,33 @@ public class TagListener implements Listener {
                         // only actually begin to register a tag if it's a zombie hitting a human
                         if (!Stats.getCooldowns().containsKey(damager.getDisplayName()) || Stats.getStunCooldown(damager.getDisplayName()) <= System.currentTimeMillis() / 1000) {
                             // check if the zombie's stunned
-                            if (false) {
-                                // TODO function to check human's body armor, then logic after to break/cooldown
-                            } else {
-                                damager.playSound(damager.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.8f, 1.0f);
-                                entity.playSound(entity.getLocation(), Sound.ENTITY_ZOMBIE_AMBIENT, 0.8f, 1.0f);
+                            if(!gracePeriod.containsKey(entity.getDisplayName()) || gracePeriod.get(entity.getDisplayName()) <= System.currentTimeMillis()){
+                                if (Stats.getHumans().get(entity.getDisplayName()).playerHasBodyArmor() && entity.getInventory().getChestplate() != null) {
+                                    // Check if human is wearing body armor
+                                    damager.sendMessage(ChatColor.GOLD + "You tried tagging " + ChatColor.GREEN + entity.getDisplayName()
+                                            + ChatColor.GOLD + ", but they had Body Armor on!");
+                                    entity.sendMessage(ChatColor.GOLD + "You were almost tagged, but your Body Armor saved you! It's broken now.");
+                                    entity.getInventory().setItem(38, new ItemStack(Material.AIR));
+                                    entity.playSound(entity.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.8f, 1.0f);
+                                    // Give the human a 5 second grace period to try and stun the zombie or just get out of danger
+                                    // So the zombie can't double-tag
+                                    gracePeriod.put(entity.getDisplayName(), System.currentTimeMillis() + 5000);
+                                    Stats.getHumans().get(entity.getDisplayName()).setHasBodyArmor(false);
+                                } else {
+                                    damager.playSound(damager.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.8f, 1.0f);
+                                    entity.playSound(entity.getLocation(), Sound.ENTITY_ZOMBIE_AMBIENT, 0.8f, 1.0f);
 
-                                Stats.addZombie(entity.getDisplayName(), 300, "Zombie", entity); // make human a zombie
-                                Stats.addTag(entity.getDisplayName(), damager.getDisplayName()); // register the tag
-                                PlayerScoreboard.updateBoard(entity); // update scoreboards
-                                PlayerScoreboard.updateBoard(damager);
-                                Bukkit.broadcastMessage(ChatColor.GOLD + entity.getDisplayName() + " has been tagged by " +
-                                        zombieList.get(damager.getDisplayName()).getNameTagColor() +
-                                        zombieList.get(damager.getDisplayName()).getSpecialStatus() + " " +
-                                        damager.getDisplayName() + "!"); // might not be a broadcast if too many tags
+                                    Stats.addZombie(entity.getDisplayName(), 300, "Zombie", entity); // make human a zombie
+                                    Stats.addTag(entity.getDisplayName(), damager.getDisplayName()); // register the tag
+                                    PlayerScoreboard.updateBoard(entity); // update scoreboards
+                                    PlayerScoreboard.updateBoard(damager);
+                                    Bukkit.broadcastMessage(ChatColor.GOLD + entity.getDisplayName() + " has been tagged by " +
+                                            zombieList.get(damager.getDisplayName()).getNameTagColor() +
+                                            zombieList.get(damager.getDisplayName()).getSpecialStatus() + " " +
+                                            damager.getDisplayName() + "!"); // might not be a broadcast if too many tags
+                                }
+                            } else {
+                                damager.sendMessage(ChatColor.RED + "You can't tag the human yet!");
                             }
                         } else {
                             // zombie is stunned
