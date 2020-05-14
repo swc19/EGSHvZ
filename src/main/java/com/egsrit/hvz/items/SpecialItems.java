@@ -25,10 +25,10 @@ public class SpecialItems {
 
     public static ItemStack makeAntivirus(){
         return new ItemBuilder(Material.NAME_TAG)
-        .setName(ChatColor.GOLD + "" + ChatColor.BOLD + "Antivirus")
-        .setLore("This will turn you back into a human!", "One use only")
-        .hideFlags(ItemFlag.HIDE_ATTRIBUTES)
-        .build();
+                .setName(ChatColor.GOLD + "" + ChatColor.BOLD + "Antivirus")
+                .setLore("This will turn you back into a human!", "One use only")
+                .hideFlags(ItemFlag.HIDE_ATTRIBUTES)
+                .build();
     }
 
     public static ItemStack makeBioCade(){

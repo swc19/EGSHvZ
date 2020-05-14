@@ -38,6 +38,7 @@ public class WeaponListener implements Listener {
 
     private void shootArrow(PlayerInteractEvent e, Player p, ItemStack handItem){
         int cooldownTime = 1; // cooldown time in seconds
+        // TODO check elephant blaster
         if(ChatColor.stripColor(handItem.getItemMeta().getDisplayName()).equals("Blaster")) {
             e.setCancelled(true);
             if (!shotCooldowns.containsKey(p.getDisplayName()) || shotCooldowns.get(p.getDisplayName()) <= System.currentTimeMillis()) {

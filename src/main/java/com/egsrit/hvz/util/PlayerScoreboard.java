@@ -58,9 +58,11 @@ public class PlayerScoreboard {
             @Override
             public void run() {
                     if(Stats.getStunCooldown(player.getDisplayName()) <= System.currentTimeMillis()/1000){
-                        for(int i = 0; i < Stats.getZombies().get(player.getDisplayName()).getStunTime() + 1; i++){
-                            // Timer can get stuck sometimes (rarely), this will clear all of them including 0 to end the task
-                            board.resetScores(ChatColor.GOLD + "Stun Time: " + ChatColor.RED + i);
+                        if(Stats.getZombies().containsKey(player.getDisplayName())){
+                            for(int i = 0; i < Stats.getZombies().get(player.getDisplayName()).getStunTime() + 1; i++){
+                                // Timer can get stuck sometimes (rarely), this will clear all of them including 0 to end the task
+                                board.resetScores(ChatColor.GOLD + "Stun Time: " + ChatColor.RED + i);
+                            }
                         }
                         this.cancel();
                     } else {
