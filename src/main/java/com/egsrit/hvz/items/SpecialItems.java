@@ -57,10 +57,11 @@ public class SpecialItems {
 
     }
 
-    public static ItemStack makeElephantBlaster(){
-        //TODO
-        return new ItemBuilder(Material.AIR).build();
-
+    public static ItemStack makeElephantBlaster(int itemUses){
+        return new ItemBuilder(Material.BOW)
+                .setName(ChatColor.BLUE + "" + ChatColor.BOLD + "Elephant Blaster")
+                .setLore("This can remove a Special Zombie's shirt!", "Uses remaining: " + itemUses)
+                .build();
     }
 
     public static ItemStack makeSpecialShirt(ChatColor ccolor, Color color, String type){

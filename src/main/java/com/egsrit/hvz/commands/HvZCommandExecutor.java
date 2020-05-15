@@ -227,7 +227,7 @@ public class HvZCommandExecutor implements CommandExecutor {
                 return true;
             case "Elephantblaster":
             case "Elephant":
-                p.getInventory().addItem(SpecialItems.makeElephantBlaster());
+                p.getInventory().addItem(SpecialItems.makeElephantBlaster(3));
                 return true;
             case "Blaster":
                 p.getInventory().addItem(SpecialItems.makeBlaster());

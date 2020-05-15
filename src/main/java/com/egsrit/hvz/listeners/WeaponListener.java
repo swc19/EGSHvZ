@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
@@ -39,20 +40,35 @@ public class WeaponListener implements Listener {
     private void shootArrow(PlayerInteractEvent e, Player p, ItemStack handItem){
         int cooldownTime = 1; // cooldown time in seconds
         // TODO check elephant blaster
-        if(ChatColor.stripColor(handItem.getItemMeta().getDisplayName()).equals("Blaster")) {
+        String itemName = ChatColor.stripColor(handItem.getItemMeta().getDisplayName());
+        if(itemName.contains("Blaster")) {
             e.setCancelled(true);
             if (!shotCooldowns.containsKey(p.getDisplayName()) || shotCooldowns.get(p.getDisplayName()) <= System.currentTimeMillis()) {
+                if(itemName.equals("Elephant Blaster")){
+                    // Increase the cooldown on elephant blaster
+                    cooldownTime = 3;
+                    String loreLine = handItem.getItemMeta().getLore().get(1); // Change the lore to reflect the number of uses left
+                    int itemUses = Integer.parseInt(loreLine.substring(loreLine.length() - 1));
+                    if(itemUses == 1){
+                        p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.8f, 1.0f);
+                        p.sendMessage(ChatColor.GOLD + "That was your last use!");
+                        p.getInventory().remove(handItem);
+                    } else {
+                        handItem = new ItemBuilder(handItem).setLore("This can remove a Special Zombie's shirt!", "Uses remaining: " + (itemUses - 1)).build();
+                    }
+                }
                 p.playSound(p.getLocation(), Sound.ENTITY_ARROW_SHOOT, 1.0f, 1.0f);
-                p.launchProjectile(Arrow.class);
+                Arrow arrow = p.launchProjectile(Arrow.class);
+                arrow.setMetadata("Weapon Name", new FixedMetadataValue(HvZPlugin.getInstance(), itemName)); // set metadata of the weapon name to check later against a stun
                 shotCooldowns.put(p.getDisplayName(), System.currentTimeMillis() + (cooldownTime*1000)); // use milliseconds here to avoid rounding issues with one second increment
-                tickDurability(handItem);
+                tickDurability(handItem, cooldownTime);
             } else {
                 p.sendMessage(ChatColor.RED + "You can't shoot yet!");
             }
         }
     }
 
-    private void tickDurability(ItemStack handItem){
+    private void tickDurability(ItemStack handItem, int seconds){
         new BukkitRunnable(){
             final ItemBuilder builder = new ItemBuilder(handItem);
             final int bowDurability = handItem.getType().getMaxDurability();
@@ -63,7 +79,7 @@ public class WeaponListener implements Listener {
                     builder.setDurability(0);
                     this.cancel();
                 } else {
-                    counter -= bowDurability / 20;
+                    counter -= bowDurability / (seconds * 20); // number of ticks to increment
                     builder.setDurability(counter);
                 }
             }

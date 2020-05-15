@@ -4,6 +4,6 @@ main: com.egsrit.hvz.HvZPlugin
 api-version: 1.13
 commands:
     hvz:
-        description: Add a player to the humans or zombies
-        usage: /<command> [human|zombie] [specialType]
+        description: Humans vs. Zombies related commands
+        
 depend: [ArmorEquipEvent]

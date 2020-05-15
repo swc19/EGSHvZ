@@ -5,6 +5,7 @@ import com.egsrit.hvz.players.HvzZombie;
 import com.egsrit.hvz.util.PlayerScoreboard;
 import com.egsrit.hvz.util.Stats;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
@@ -12,7 +13,10 @@ import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.MetadataValue;
 
+import java.util.List;
 import java.util.Map;
 
 public class StunListener implements Listener {
@@ -86,6 +90,9 @@ public class StunListener implements Listener {
         if(e.getEntity() instanceof Player && e.getDamager() instanceof Arrow){
             Player zombie = (Player) e.getEntity();
             Arrow arrow = (Arrow) e.getDamager();
+            List<MetadataValue> metaData = arrow.getMetadata("Weapon Name");
+            String weaponName = ChatColor.stripColor(metaData.get(0).asString());
+            System.out.println(weaponName);
             if(arrow.getShooter() instanceof Player && arrow.getShooter() != zombie){
                 Player damager = (Player) arrow.getShooter();
                 if(humanList.containsKey(damager.getDisplayName()) && humanList.containsKey(zombie.getDisplayName())){
@@ -103,10 +110,20 @@ public class StunListener implements Listener {
                         switch(specialStatus){
                             case "Tank":
                             case "Twitch":
-                                damager.sendMessage(ChatColor.RED + "You cannot stun this " + specialStatus + " with a blaster!");
-                                break;
+                                if(weaponName.equals("Blaster")){
+                                    // Any special type can be affected by the elephant blaster, seen below
+                                    damager.sendMessage(ChatColor.RED + "You cannot stun this " + specialStatus + " with a normal blaster!");
+                                    break;
+                                }
                             default:
-                                // Everything except the above two types can be stunned with a blaster, so default to registering the stun
+                                // Everything except the above two types can be stunned with a normal blaster, so default to registering the stun
+                                if(weaponName.equals("Elephant Blaster") && !specialStatus.equals("Zombie")){
+                                    // If a special is hit by elephant blaster, remove their shirt and make them a regular zombie again
+                                    zombie.sendMessage(ChatColor.RED + "You've been hit by an Elephant Blaster and are no longer a " + specialStatus + "!");
+                                    zombie.getInventory().setItem(38, new ItemStack(Material.AIR));
+                                    zombie.playSound(zombie.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.8f, 1.0f);
+                                    Stats.addZombie(zombie.getDisplayName(), 300, "Zombie", zombie);
+                                }
                                 stunZombie(zombie, damager);
                                 Stats.addStun(damager.getDisplayName(), zombie.getDisplayName());
                                 PlayerScoreboard.updateBoard(zombie);
