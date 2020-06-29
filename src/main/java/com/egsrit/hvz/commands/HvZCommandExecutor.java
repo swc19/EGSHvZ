@@ -68,6 +68,14 @@ public class HvZCommandExecutor implements CommandExecutor {
                         sender.sendMessage(ChatColor.RED + "Usage: /hvz give itemType username");
                         return true;
                     }
+			
+				case "enable":
+					//Starts the plugin and loads the scoreboard for all players
+					return true;
+					
+				case "disable":
+					//Disables the plugin and removes the scoreboards
+					return true;
                 default:
                     sender.sendMessage(ChatColor.RED + "HVZ command not found: " + args[0]);
                     return true;

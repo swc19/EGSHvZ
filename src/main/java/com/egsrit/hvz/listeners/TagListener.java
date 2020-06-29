@@ -4,17 +4,16 @@ import com.egsrit.hvz.players.Human;
 import com.egsrit.hvz.players.HvzZombie;
 import com.egsrit.hvz.util.PlayerScoreboard;
 import com.egsrit.hvz.util.Stats;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TagListener implements Listener {
@@ -42,15 +41,20 @@ public class TagListener implements Listener {
                         if (!Stats.getCooldowns().containsKey(damager.getDisplayName()) || Stats.getStunCooldown(damager.getDisplayName()) <= System.currentTimeMillis() / 1000) {
                             // check if the zombie's stunned
                             if(!gracePeriod.containsKey(entity.getDisplayName()) || gracePeriod.get(entity.getDisplayName()) <= System.currentTimeMillis()){
+								//Check if entity in safe zone
+								if(nearSafeZone(entity, 3)){
+                                    damager.sendMessage(ChatColor.GREEN + entity.getDisplayName() + ChatColor.GOLD + " is in a safe zone and can't be tagged!");
+                                    return;
+                                }
                                 if (Stats.getHumans().get(entity.getDisplayName()).playerHasBodyArmor() && entity.getInventory().getChestplate() != null) {
                                     // Check if human is wearing body armor
                                     damager.sendMessage(ChatColor.GOLD + "You tried tagging " + ChatColor.GREEN + entity.getDisplayName()
                                             + ChatColor.GOLD + ", but they had Body Armor on!");
-                                    entity.sendMessage(ChatColor.GOLD + "You were almost tagged, but your Body Armor saved you! It's broken now.");
+                                    entity.sendMessage(ChatColor.GOLD + "You were tagged, but your Body Armor saved you! It's broken now.");
                                     entity.getInventory().setItem(38, new ItemStack(Material.AIR));
                                     entity.playSound(entity.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.8f, 1.0f);
                                     // Give the human a 5 second grace period to try and stun the zombie or just get out of danger
-                                    // So the zombie can't double-tag
+                                    // so the zombie can't double-tag, can increase grace period
                                     gracePeriod.put(entity.getDisplayName(), System.currentTimeMillis() + 5000);
                                     Stats.getHumans().get(entity.getDisplayName()).setHasBodyArmor(false);
                                 } else {
@@ -67,7 +71,7 @@ public class TagListener implements Listener {
                                             damager.getDisplayName() + "!"); // might not be a broadcast if too many tags
                                 }
                             } else {
-                                damager.sendMessage(ChatColor.RED + "You can't tag the human yet!");
+                                damager.sendMessage(ChatColor.RED + "You can't tag this human yet!");
                             }
                         } else {
                             // zombie is stunned
@@ -79,4 +83,14 @@ public class TagListener implements Listener {
             }
         }
     }
+
+	
+	public boolean nearSafeZone(Player p, int radius){
+		//TODO
+		//Iterate through safezones, compare player distance
+		//If within pre-set radius, return true
+		//Uses m a t h
+        List<Location> safeZones = SpecialItemListener.getSafeZones();
+        return true;
+	}
 }
