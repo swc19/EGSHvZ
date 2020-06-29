@@ -1,9 +1,0 @@
-name: HvZPlugin
-version: 0.1.1
-main: com.egsrit.hvz.HvZPlugin
-api-version: 1.13
-commands:
-    hvz:
-        description: Humans vs. Zombies related commands
-        
-depend: [ArmorEquipEvent]
