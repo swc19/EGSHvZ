@@ -1,15 +1,19 @@
 package com.egsrit.hvz.commands;
 
+import com.egsrit.hvz.HvZPlugin;
 import com.egsrit.hvz.items.SpecialItems;
+import com.egsrit.hvz.listeners.SpecialItemListener;
 import com.egsrit.hvz.util.Stats;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +31,7 @@ public class HvZCommandExecutor implements CommandExecutor {
                         sender.sendMessage(ChatColor.RED + "Usage: /hvz human username");
                         return true;
                     }
+
                 case "zombie":
                     // Debug command to make a player a (optionally special) zombie
                     // "Zombie" is a valid special type for a regular zombie
@@ -36,6 +41,7 @@ public class HvZCommandExecutor implements CommandExecutor {
                         sender.sendMessage(ChatColor.RED + "Usage: /hvz zombie type username");
                         return true;
                     }
+
                 case "list":
                     // show the sender a list of humans, zombies, or all players playing
                     if(args.length > 1){
@@ -54,6 +60,7 @@ public class HvZCommandExecutor implements CommandExecutor {
                         }
                     }
                     return showList(sender,"all");
+
                 case "shirt": // Spawns a shirt to make a player a special zombie
                     if(args.length > 2){
                         return giveShirt(sender, args[2], args[1]);
@@ -61,6 +68,7 @@ public class HvZCommandExecutor implements CommandExecutor {
                         sender.sendMessage(ChatColor.RED + "Usage: /hvz shirt type username");
                         return true;
                     }
+
                 case "give":
                     if(args.length > 2){
                         return giveItem(sender, args[2], args[1]);
@@ -76,6 +84,29 @@ public class HvZCommandExecutor implements CommandExecutor {
 				case "disable":
 					//Disables the plugin and removes the scoreboards
 					return true;
+
+                case "holo":
+                    Location baselocation = Bukkit.matchPlayer(sender.getName()).get(0).getLocation();
+                    baselocation.setX(baselocation.getX() + 2);
+                    new BukkitRunnable(){
+                        Integer base = 5;
+                        @Override
+                        public void run() {
+                            try{
+                                SpecialItemListener.removeHoloText("The following is an integer: " + (base+1));
+
+                            } catch(Exception e){}
+                            if(base == 0){
+                                this.cancel();
+                            } else {
+                                SpecialItemListener.makeHoloText(baselocation, "The following is an integer: " + base);
+                                base -= 1;
+                            }
+                        }
+
+                    }.runTaskTimer(HvZPlugin.getInstance(), 0, 20);
+                    return true;
+
                 default:
                     sender.sendMessage(ChatColor.RED + "HVZ command not found: " + args[0]);
                     return true;

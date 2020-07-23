@@ -1,7 +1,7 @@
 name: HvZPlugin
 version: 0.1.1
 main: com.egsrit.hvz.HvZPlugin
-api-version: 1.13
+api-version: 1.16
 commands:
     hvz:
         description: Humans vs. Zombies related commands

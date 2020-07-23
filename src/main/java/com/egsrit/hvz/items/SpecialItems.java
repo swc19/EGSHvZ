@@ -32,7 +32,6 @@ public class SpecialItems {
     }
 
     public static ItemStack makeBioCade(){
-        //TODO
         return new ItemBuilder(Material.BLACK_CONCRETE)
 				.setName(ChatColor.GRAY + "Biocade")
 				.setLore("Place this to stop humans from moving through an area!", "Max distance: 15 blocks")
@@ -51,7 +50,6 @@ public class SpecialItems {
     }
 
     public static ItemStack makeDeployableCover(){
-        //TODO
         return new ItemBuilder(Material.GREEN_CONCRETE)
 				.setName(ChatColor.GREEN + "Deployable Cover")
 				.setLore("Place this for a temporary safezone!", "Lasts 2.5 minutes")
@@ -60,7 +58,6 @@ public class SpecialItems {
     }
 
     public static ItemStack makeDeplorableCover(){
-        //TODO
         return new ItemBuilder(Material.YELLOW_CONCRETE)
 				.setName(ChatColor.YELLOW + "Deplorable Cover")
 				.setLore("Place this for a respawn point!", "Lasts for 2.5 minutes")

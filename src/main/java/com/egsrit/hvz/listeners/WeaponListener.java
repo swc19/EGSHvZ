@@ -5,6 +5,7 @@ import com.egsrit.hvz.items.ItemBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -59,6 +60,7 @@ public class WeaponListener implements Listener {
                 }
                 p.playSound(p.getLocation(), Sound.ENTITY_ARROW_SHOOT, 1.0f, 1.0f);
                 Arrow arrow = p.launchProjectile(Arrow.class);
+                arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
                 arrow.setMetadata("Weapon Name", new FixedMetadataValue(HvZPlugin.getInstance(), itemName)); // set metadata of the weapon name to check later against a stun
                 shotCooldowns.put(p.getDisplayName(), System.currentTimeMillis() + (cooldownTime*1000)); // use milliseconds here to avoid rounding issues with one second increment
                 tickDurability(handItem, cooldownTime);
