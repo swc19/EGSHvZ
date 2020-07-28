@@ -93,13 +93,13 @@ public class HvZCommandExecutor implements CommandExecutor {
                         @Override
                         public void run() {
                             try{
-                                SpecialItemListener.removeHoloText("The following is an integer: " + (base+1));
+                                SpecialItemListener.removeHoloText("The following is an integer: " + (base+1), 0);
 
                             } catch(Exception e){}
                             if(base == 0){
                                 this.cancel();
                             } else {
-                                SpecialItemListener.makeHoloText(baselocation, "The following is an integer: " + base);
+                                SpecialItemListener.makeHoloText(baselocation, "The following is an integer: " + base, 0);
                                 base -= 1;
                             }
                         }

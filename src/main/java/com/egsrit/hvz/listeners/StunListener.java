@@ -5,6 +5,7 @@ import com.egsrit.hvz.players.HvzZombie;
 import com.egsrit.hvz.util.PlayerScoreboard;
 import com.egsrit.hvz.util.Stats;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
@@ -70,7 +71,7 @@ public class StunListener implements Listener {
                     // All special zombies can be stunned by a snowball/sock
                     e.setCancelled(true);
                     snowball.remove();
-                    if(!Stats.getCooldowns().containsKey(damager.getDisplayName()) || Stats.getStunCooldown(zombie.getDisplayName()) <= System.currentTimeMillis()/1000){
+                    if(!Stats.getCooldowns().containsKey(zombie.getDisplayName()) || Stats.getStunCooldown(zombie.getDisplayName()) <= System.currentTimeMillis()/1000){
                         // If the zombie isn't already stunned, stun the zombie
                         stunZombie(zombie, damager);
                         Stats.addStun(damager.getDisplayName(), zombie.getDisplayName());
@@ -92,7 +93,6 @@ public class StunListener implements Listener {
             Arrow arrow = (Arrow) e.getDamager();
             List<MetadataValue> metaData = arrow.getMetadata("Weapon Name");
             String weaponName = ChatColor.stripColor(metaData.get(0).asString());
-            System.out.println(weaponName);
             if(arrow.getShooter() instanceof Player && arrow.getShooter() != zombie){
                 Player damager = (Player) arrow.getShooter();
                 if(humanList.containsKey(damager.getDisplayName()) && humanList.containsKey(zombie.getDisplayName())){
@@ -123,6 +123,7 @@ public class StunListener implements Listener {
                                     zombie.getInventory().setItem(38, new ItemStack(Material.AIR));
                                     zombie.playSound(zombie.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.8f, 1.0f);
                                     Stats.addZombie(zombie.getDisplayName(), 300, "Zombie", zombie);
+                                    stunZombie(zombie, damager);
                                 }
                                 stunZombie(zombie, damager);
                                 Stats.addStun(damager.getDisplayName(), zombie.getDisplayName());
@@ -147,12 +148,14 @@ public class StunListener implements Listener {
             color = zombieList.get(damager.getDisplayName()).getNameTagColor();
             message = zombieList.get(damager.getDisplayName()).getSpecialStatus() + " ";
         }
-        if(Stats.getCooldowns().containsKey(zombie.getDisplayName())){ // If player has been stunned before
-            Long stunCooldown = Stats.getStunCooldown(zombie.getDisplayName());
-            if(stunCooldown > System.currentTimeMillis()/1000){
-                damager.sendMessage(ChatColor.RED + zombie.getDisplayName() + " is already stunned!");
-                return;
-            }
+        if(ChatColor.stripColor(zombieList.get(zombie.getDisplayName()).getSpecialStatus()).equals("Boomer")){
+            Location boomerLocation = zombie.getLocation();
+            boomerLocation.setX(Math.floor(boomerLocation.getX()));
+            boomerLocation.setY(boomerLocation.getY() - 1);
+            boomerLocation.setZ(Math.ceil(boomerLocation.getZ()));
+            boomerLocation.setPitch(0);
+            boomerLocation.setYaw(0);
+            SpecialItemListener.doDeplorableCover(zombie, boomerLocation, true);
         }
         damager.playSound(damager.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 0.8f, 0.5f);
         zombie.playSound(zombie.getLocation(), Sound.BLOCK_REDSTONE_TORCH_BURNOUT, 0.8f, 0.7f);
